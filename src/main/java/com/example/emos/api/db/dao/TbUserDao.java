@@ -26,4 +26,6 @@ public interface TbUserDao {
 
     public ArrayList<HashMap> searchAllUser();
 
+    public Integer login(HashMap param);
+
 }

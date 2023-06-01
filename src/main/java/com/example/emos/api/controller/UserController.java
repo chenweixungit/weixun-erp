@@ -4,8 +4,10 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaMode;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.json.JSONUtil;
 import com.example.emos.api.common.util.R;
 import com.example.emos.api.controller.form.CheckQrCodeForm;
+import com.example.emos.api.controller.form.LoginForm;
 import com.example.emos.api.controller.form.SearchUserByIdForm;
 import com.example.emos.api.controller.form.WechatLoginForm;
 import com.example.emos.api.service.UserService;
@@ -25,6 +27,21 @@ import java.util.Set;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @PostMapping("login")
+    @Operation(summary = "登录系统")
+    public R login(@Valid @RequestBody LoginForm form){
+        HashMap param = JSONUtil.parse(form).toBean(HashMap.class);
+        Integer userId = userService.login(param);
+        R r = R.ok().put("result", userId!= null ? true : false);
+        if(userId != null){
+            StpUtil.setLoginId(userId);
+            Set<String> permissions = userService.searchUserPermissions(userId);
+            String token = StpUtil.getTokenInfo().getTokenValue();
+            r.put("permissions", permissions).put("token", token);
+        }
+        return r;
+    }
 
     /**
      * 生成登陆二维码的字符串

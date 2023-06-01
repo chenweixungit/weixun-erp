@@ -18,4 +18,6 @@ public interface UserService {
     public HashMap searchById(int userId);
 
     public ArrayList<HashMap> searchAllUser();
+
+    public Integer login(HashMap param);
 }

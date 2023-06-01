@@ -62,4 +62,8 @@
         FROM tb_user
         WHERE status = 1
     </select>
+    <select id="login" parameterType="HashMap" resultType="Integer">
+        SELECT id from tb_user where username = #{username} AND password = HEX(AES_ENCRYPT(#{password},#{username}))
+         LIMIT 1
+    </select>
 </mapper>
