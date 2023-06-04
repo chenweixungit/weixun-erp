@@ -20,4 +20,6 @@ public interface UserService {
     public ArrayList<HashMap> searchAllUser();
 
     public Integer login(HashMap param);
+
+    public int updatePassword(HashMap param);
 }

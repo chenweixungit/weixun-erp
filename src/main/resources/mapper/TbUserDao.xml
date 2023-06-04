@@ -66,4 +66,10 @@
         SELECT id from tb_user where username = #{username} AND password = HEX(AES_ENCRYPT(#{password},#{username}))
          LIMIT 1
     </select>
+    <update id="updatePassword" parameterType="HashMap">
+        update tb_user
+        set password = HEX(AES_ENCRYPT(#{newPassword},username))
+        where id = #{userId}
+        and password = HEX(AES_ENCRYPT(#{password}, username))
+    </update>
 </mapper>

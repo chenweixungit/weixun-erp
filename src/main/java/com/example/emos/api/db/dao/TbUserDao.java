@@ -28,4 +28,6 @@ public interface TbUserDao {
 
     public Integer login(HashMap param);
 
+    public int updatePassword(HashMap param);
+
 }
