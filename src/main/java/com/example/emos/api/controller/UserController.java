@@ -11,6 +11,8 @@ import com.example.emos.api.controller.form.LoginForm;
 import com.example.emos.api.controller.form.SearchUserByIdForm;
 import com.example.emos.api.controller.form.WechatLoginForm;
 import com.example.emos.api.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +26,18 @@ import java.util.Set;
 @RestController
 @RequestMapping("/user")
 @Tag(name = "UserController", description = "用户Web接口")
+@Api(value = "接口说明", tags = "接口说明")
 public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("login")
+    @PostMapping("/login")
     @Operation(summary = "登录系统")
+    @ApiOperation(value="登录")
     public R login(@Valid @RequestBody LoginForm form){
+//        System.out.print(form);
         HashMap param = JSONUtil.parse(form).toBean(HashMap.class);
+//        System.out.print("11111111111111111");
         Integer userId = userService.login(param);
         R r = R.ok().put("result", userId!= null ? true : false);
         if(userId != null){
