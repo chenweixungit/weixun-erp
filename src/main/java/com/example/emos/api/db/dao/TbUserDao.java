@@ -30,4 +30,8 @@ public interface TbUserDao {
 
     public int updatePassword(HashMap param);
 
+    public ArrayList<HashMap> searchUserByPage(HashMap param);
+
+    public long searchUserCount(HashMap param);
+
 }
