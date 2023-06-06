@@ -8,6 +8,7 @@ import cn.hutool.json.JSONUtil;
 import com.example.emos.api.common.util.PageUtils;
 import com.example.emos.api.common.util.R;
 import com.example.emos.api.controller.form.*;
+import com.example.emos.api.db.pojo.TbUser;
 import com.example.emos.api.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -28,6 +30,18 @@ import java.util.Set;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @PostMapping("/insert")
+    @SaCheckPermission(value = {"ROOT","USER:INSERT"}, mode = SaMode.OR)
+    @Operation(summary = "添加用户")
+    public R insert(@Valid @RequestBody InsertUserForm form){
+        TbUser user = JSONUtil.parse(form).toBean(TbUser.class);
+        user.setStatus((byte)1);
+        user.setCreateTime(new Date());
+        user.setRole(JSONUtil.parseArray(form.getRole()).toString());
+        int rows = userService.insert(user);
+        return R.ok().put("rows", rows);
+    }
     @PostMapping("searchUserByPage")
     @Operation(summary = "查询用户分页记录")
     @SaCheckPermission(value = {"ROOT","USER:SELECT"}, mode= SaMode.OR)

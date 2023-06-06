@@ -34,4 +34,6 @@ public interface TbUserDao {
 
     public long searchUserCount(HashMap param);
 
+    public int insert(TbUser param);
+
 }
