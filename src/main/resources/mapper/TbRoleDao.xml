@@ -16,4 +16,57 @@
         FROM tb_role
         WHERE id = #{id}
     </select>
+    <select id="searchRoleByPage" parameterType="HashMap" resultType="HashMap">
+        select
+        r.id,
+        r.role_name as roleName,
+        count(u.id) as users,
+        JSON_LENGTH( r.permissions ) as permissions,
+        r.`desc`,
+        r.systemic
+        from tb_role as r
+        left join tb_user as u
+            on JSON_CONTAINS(u.role, CONVERT(r.id, CHAR))
+        where 1 = 1
+        <if test="roleName!=null">
+            and r.role_name like '%${roleName}%'
+        </if>
+        group by r.id
+        order by r.id
+        LIMIT #{start}, #{length}
+    </select>
+    <select id="searchRoleCount" parameterType="HashMap" resultType="long">
+        SELECT COUNT(*) FROM (
+        SELECT r.id
+        FROM tb_role r
+        LEFT JOIN tb_user u ON JSON_CONTAINS ( u.role, CONVERT ( r.id, CHAR ) )
+        WHERE 1=1
+        <if test="roleName!=null">
+            AND r.role_name LIKE '%${roleName}%'
+        </if>
+        GROUP BY r.id
+        ) AS temp
+    </select>
+    <insert id="insert" parameterType="com.example.emos.api.db.pojo.TbRole">
+        insert into tb_role
+        set role_name = #{roleName},
+        permissions = #{permissions}
+        <if test="desc=!null">
+            ,`desc`=#{desc}
+        </if>
+    </insert>
+    <select id="searchUserIdByRoleId" parameterType="int" resultType="int">
+        select u.id
+        from tb_role as r
+        join tb_user as u
+            on JSON_CONTAINS(u.role, CONVERT(r.id, CHAR))
+        where r.id = #{id}
+    </select>
+    <update id="update" parameterType="com.example.emos.api.db.pojo.TbRole">
+        update tb_role
+        set role_name = #{roleName},
+        `desc`= #{desc},
+        permissions=#{permissions}
+        where id = #{id} and id!=0
+    </update>
 </mapper>

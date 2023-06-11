@@ -2,8 +2,15 @@ package com.example.emos.api.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaMode;
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.json.JSONUtil;
+import com.example.emos.api.common.util.PageUtils;
 import com.example.emos.api.common.util.R;
+import com.example.emos.api.controller.form.InsertRoleForm;
 import com.example.emos.api.controller.form.SearchRoleByIdForm;
+import com.example.emos.api.controller.form.SearchRoleByPageForm;
+import com.example.emos.api.controller.form.UpdateRoleForm;
+import com.example.emos.api.db.pojo.TbRole;
 import com.example.emos.api.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,4 +42,52 @@ public class RoleController {
         HashMap map = roleService.searchById(form.getId());
         return R.ok(map);
     }
+
+    @PostMapping("/searchRoleByPage")
+    @Operation(summary = "查询角色分页数据")
+    @SaCheckPermission(value = {"ROOT", "ROLE:SELECT"}, mode = SaMode.OR)
+    public R searchRoleByPage(@Valid @RequestBody SearchRoleByPageForm form) {
+        int page = form.getPage();
+        int length = form.getLength();
+        int start = (page - 1) * length;
+        HashMap param = JSONUtil.parse(form).toBean(HashMap.class);
+        param.put("start", start);
+        PageUtils pageUtils = roleService.searchRoleByPage(param);
+        return R.ok().put("page", pageUtils);
+    }
+
+    @PostMapping("/insert")
+    @Operation(summary = "添加角色")
+    @SaCheckPermission(value = {"ROOT", "ROLE:INSERT"}, mode = SaMode.OR)
+    public R insert(@Valid @RequestBody InsertRoleForm form){
+        TbRole role = new TbRole();
+        role.setRoleName(form.getRoleName());
+        role.setDesc(form.getDesc());
+        role.setPermissions(JSONUtil.parse(form.getPermissions()).toString());
+        int rows = roleService.insert(role);
+        return R.ok().put("rows",rows);
+    }
+
+    @PostMapping("/update")
+    @SaCheckPermission(value = {"ROOT", "ROLE:UPDATE"}, mode = SaMode.OR)
+    @Operation(summary = "更新角色")
+    public R update(@Valid @RequestBody UpdateRoleForm form){
+        TbRole role = new TbRole();
+        role.setId(form.getId());
+        role.setDesc(form.getDesc());
+        role.setRoleName(form.getRoleName());
+        role.setPermissions(JSONUtil.parseArray(form.getPermissions()).toString());
+        int rows = roleService.update(role);
+        //如果用户修改成功，并且用户修改了该角色的关联权限
+        if(rows == 1 && form.getChanged()){
+            //把该角色关联的用户踢下线
+            ArrayList<Integer> list = roleService.searchUserIdByRoleId(form.getId());
+            list.forEach(userId->{
+                StpUtil.logoutByLoginId(userId);
+            });
+        }
+        return R.ok().put("rows", rows);
+    }
+
+
 }

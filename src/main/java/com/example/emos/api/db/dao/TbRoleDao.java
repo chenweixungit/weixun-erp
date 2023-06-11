@@ -11,4 +11,9 @@ import java.util.HashMap;
 public interface TbRoleDao {
     public ArrayList<HashMap> searchAllRole();
     public HashMap searchById(int id);
+    public ArrayList<HashMap> searchRoleByPage(HashMap param);
+    public long searchRoleCount(HashMap param);
+    public int insert(TbRole role);
+    public ArrayList<Integer> searchUserIdByRoleId(int roleId);
+    public int update(TbRole role);
 }
