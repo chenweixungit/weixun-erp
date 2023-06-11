@@ -29,4 +29,8 @@ public interface UserService {
     public PageUtils searchUserByPage(HashMap param);
 
     public int insert(TbUser user);
+
+    public int update(HashMap param);
+    public int deleteUserByIds(Integer[] ids);
+
 }

@@ -36,4 +36,7 @@ public interface TbUserDao {
 
     public int insert(TbUser param);
 
+    public int update(HashMap param);
+
+    public int deleteUserByIds(Integer[] ids);
 }

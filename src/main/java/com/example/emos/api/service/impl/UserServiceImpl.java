@@ -138,6 +138,18 @@ public class UserServiceImpl implements UserService {
         return rows;
     }
 
+    @Override
+    public int update(HashMap param) {
+        int rows = userDao.update(param);
+        return rows;
+    }
+
+    @Override
+    public int deleteUserByIds(Integer[] ids) {
+        int rows = userDao.deleteUserByIds(ids);
+        return rows;
+    }
+
     private String getOpenId(String code) {
         String url = "https://api.weixin.qq.com/sns/jscode2session";
         HashMap map = new HashMap();
