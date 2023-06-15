@@ -16,4 +16,33 @@
         FROM tb_dept
         WHERE id = #{id}
     </select>
+    <select id="searchDeptByPage" parameterType="HashMap" resultType="HashMap">
+        select
+            d.id,
+            d.dept_name as deptName,
+            d.tel,
+            d.email,
+            d.desc,
+            count(u.id) as emps
+        from tb_dept d
+        left join tb_user u
+        on d.id=u.dept_id and u.status=1
+        where 1=1
+        <if test="deptName!=null">
+            and d.dept_name like "%${deptName}%"
+        </if>
+        group by d.id
+        limit #{start}, #{length}
+    </select>
+    <select id="searchDeptCount" parameterType="HashMap" resultType="long">
+        SELECT COUNT(*) FROM (
+        SELECT d.id
+        FROM tb_dept d LEFT JOIN tb_user u ON u.dept_id=d.id AND u.status=1
+        WHERE 1=1
+        <if test="deptName!=null">
+            AND d.dept_name LIKE '%${deptName}%'
+        </if>
+        GROUP BY d.id
+        ) AS temp
+    </select>
 </mapper>

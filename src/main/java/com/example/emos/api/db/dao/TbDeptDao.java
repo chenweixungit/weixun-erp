@@ -12,4 +12,7 @@ public interface TbDeptDao {
     public ArrayList<HashMap> searchAllDept();
     public HashMap searchById(int id);
 
+    public ArrayList<HashMap> searchDeptByPage(HashMap params);
+
+    public long searchDeptCount(HashMap params);
 }
