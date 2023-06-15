@@ -3,6 +3,7 @@ package com.example.emos.api.service.impl;
 import com.example.emos.api.common.util.PageUtils;
 import com.example.emos.api.db.dao.TbRoleDao;
 import com.example.emos.api.db.pojo.TbRole;
+import com.example.emos.api.exception.EmosException;
 import com.example.emos.api.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,15 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public int update(TbRole role) {
         int rows = roleDao.update(role);
+        return rows;
+    }
+
+    @Override
+    public int deleteRoleByIds(Integer[] ids) {
+        if(!roleDao.searchCanDelete(ids)){
+            throw  new EmosException("无法删除关联用户角色");
+        }
+        int rows = roleDao.deleteRoleByIds(ids);
         return rows;
     }
 }

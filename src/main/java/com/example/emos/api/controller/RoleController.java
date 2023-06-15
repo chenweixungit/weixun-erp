@@ -6,10 +6,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.json.JSONUtil;
 import com.example.emos.api.common.util.PageUtils;
 import com.example.emos.api.common.util.R;
-import com.example.emos.api.controller.form.InsertRoleForm;
-import com.example.emos.api.controller.form.SearchRoleByIdForm;
-import com.example.emos.api.controller.form.SearchRoleByPageForm;
-import com.example.emos.api.controller.form.UpdateRoleForm;
+import com.example.emos.api.controller.form.*;
 import com.example.emos.api.db.pojo.TbRole;
 import com.example.emos.api.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +25,13 @@ public class RoleController {
     @Autowired
     private RoleService roleService;
 
+    @PostMapping("/deleteRoleByIds")
+    @Operation(summary = "删除角色记录")
+    @SaCheckPermission(value = {"ROOT", "ROLE:DELETE"}, mode = SaMode.OR)
+    public R deleteRoleByIds(@Valid @RequestBody DeleteRoleByIdsForm form){
+        int rows = roleService.deleteRoleByIds(form.getIds());
+        return R.ok().put("rows", rows);
+    }
     @GetMapping("/searchAllRole")
     @Operation(summary = "查询所有角色")
     public R searchAllRole() {

@@ -69,4 +69,24 @@
         permissions=#{permissions}
         where id = #{id} and id!=0
     </update>
+    <select id="searchCanDelete" resultType="boolean">
+        select if(sum(temp.users) > 0 , FALSE, TRUE) as result from (
+            SELECT COUNT( u.id ) AS users
+            FROM tb_role r
+            JOIN tb_user u ON JSON_CONTAINS ( u.role, CONVERT ( r.id, CHAR ) )
+            WHERE r.id IN
+            <foreach collection="array" open="(" separator="," close=")" item="one">
+                #{one}
+            </foreach>
+            GROUP BY r.id
+        ) temp
+    </select>
+    <delete id="deleteRoleByIds">
+        delete from tb_role
+        where id in
+        <foreach collection="array" open="(" separator="," close=")" item="one">
+            #{one}
+        </foreach>
+        and systemic=FALSE
+    </delete>
 </mapper>

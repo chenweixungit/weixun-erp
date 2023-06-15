@@ -17,4 +17,6 @@ public interface RoleService {
     public ArrayList<Integer> searchUserIdByRoleId(int roleId);
     public int update(TbRole role);
 
+    public int deleteRoleByIds(Integer[] ids);
+
 }
