@@ -14,4 +14,13 @@ public interface TbMeetingRoomDao {
     
     public ArrayList<String> searchFreeMeetingRoom(HashMap param);
 
+    public ArrayList<HashMap> searchMeetingRoomByPage(HashMap param);
+    public long searchMeetingRoomCount(HashMap param);
+
+    public int insert(TbMeetingRoom meetingRoom);
+
+    public int update(TbMeetingRoom meetingRoom);
+
+    public boolean searchCanDelete(Integer[] ids);
+    public int deleteMeetingRoomByIds(Integer[] ids);
 }
