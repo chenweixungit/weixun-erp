@@ -45,4 +45,46 @@
         GROUP BY d.id
         ) AS temp
     </select>
+    <update id="update" parameterType="com.example.emos.api.db.pojo.TbDept">
+        update tb_dept
+        set dept_name = #{deptName},
+            tel = #{tel},
+            email = #{email},
+            `desc` = #{desc}
+        where id = #{id}
+    </update>
+    <insert id="insert" parameterType="com.example.emos.api.db.pojo.TbDept">
+        INSERT INTO tb_dept
+        SET dept_name=#{deptName}
+        <if test="tel!=null">
+            ,tel=#{tel}
+        </if>
+        <if test="email!=null">
+            ,email=#{email}
+        </if>
+        <if test="desc!=null">
+            ,`desc`=#{desc}
+        </if>
+    </insert>
+
+    <select id="searchCanDelete" resultType="boolean">
+        select if(SUM(temp.users) > 0 , FALSE, TRUE) as result from (
+             select count(u.id) as users
+             from tb_dept d
+             join tb_user u
+               on d.id = u.dept_id
+             where d.id in
+             <foreach collection="array" open="(" separator="," close=")" item="one">
+                 #{one}
+             </foreach>
+             group by d.id
+        ) temp
+    </select>
+    <delete id="deleteDeptByIds">
+        delete from tb_dept
+        where id in
+        <foreach collection="array" open="(" separator="," close=")" item="one">
+            #{one}
+        </foreach>
+    </delete>
 </mapper>

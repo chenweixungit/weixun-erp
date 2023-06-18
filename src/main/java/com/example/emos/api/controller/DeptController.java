@@ -5,8 +5,9 @@ import cn.dev33.satoken.annotation.SaMode;
 import cn.hutool.json.JSONUtil;
 import com.example.emos.api.common.util.PageUtils;
 import com.example.emos.api.common.util.R;
-import com.example.emos.api.controller.form.SearchDeptByIdForm;
-import com.example.emos.api.controller.form.SearchRoleByPageForm;
+import com.example.emos.api.controller.form.*;
+import com.example.emos.api.db.pojo.TbDept;
+import com.example.emos.api.db.pojo.TbRole;
 import com.example.emos.api.service.DeptService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -51,5 +52,36 @@ public class DeptController {
         param.put("start", start);
         PageUtils pageUtils = deptService.searchDeptByPage(param);
         return R.ok().put("page",pageUtils);
+    }
+
+    @PostMapping("/insert")
+    @Operation(summary = "添加部门")
+    @SaCheckPermission(value = {"ROOT", "DEPT:INSERT"}, mode = SaMode.OR)
+    public R insert(@Valid @RequestBody InsertDeptForm form){
+        TbDept tbDept = JSONUtil.parse(form).toBean(TbDept.class);
+        int rows = deptService.insert(tbDept);
+        return R.ok().put("rows", rows);
+    }
+
+    @PostMapping("/update")
+    @Operation(summary = "修改部门")
+    @SaCheckPermission(value = {"ROOT", "DEPT:UPDATE"}, mode = SaMode.OR)
+    public R update(@Valid @RequestBody UpdateDeptForm form){
+        TbDept tbDept = new TbDept();
+        tbDept.setId(form.getId());
+        tbDept.setDeptName(form.getDeptName());
+        tbDept.setEmail(form.getEmail());
+        tbDept.setTel(form.getTel());
+        tbDept.setDesc(form.getDesc());
+        int rows = deptService.update(tbDept);
+        return R.ok().put("rows", rows);
+    }
+
+    @PostMapping("/deleteDeptByIds")
+    @Operation(summary = "删除部门记录")
+    @SaCheckPermission(value = {"ROOT", "DEPT:DELETE"}, mode = SaMode.OR)
+    public R deleteDeptByIds(@Valid @RequestBody DeleteDeptByIdsForm form) {
+        int rows = deptService.deleteDeptByIds(form.getIds());
+        return R.ok().put("rows", rows);
     }
 }
