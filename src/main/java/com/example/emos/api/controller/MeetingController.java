@@ -9,6 +9,7 @@ import com.example.emos.api.service.MeetingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/meeting")
 @Tag(name="MeetingController", description = "会议web接口")
+@EnableAsync
 public class MeetingController {
     @Autowired
     private MeetingService meetingService;

@@ -56,4 +56,10 @@
         WHERE status=1
     </select>
 
+    <update id="updateMeetingInstanceId" parameterType="HashMap">
+        UPDATE tb_meeting
+        SET instance_id=#{instanceId}
+        WHERE uuid=#{uuid}
+    </update>
+
 </mapper>
