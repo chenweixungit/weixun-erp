@@ -3,7 +3,10 @@ package com.example.emos.api.service.impl;
 import cn.hutool.json.JSONUtil;
 import com.example.emos.api.common.util.PageUtils;
 import com.example.emos.api.db.dao.TbMeetingDao;
+import com.example.emos.api.db.pojo.TbMeeting;
+import com.example.emos.api.exception.EmosException;
 import com.example.emos.api.service.MeetingService;
+import com.example.emos.api.task.MeetingWorkflowTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,9 @@ import java.util.HashMap;
 public class MeetingServiceImpl implements MeetingService {
     @Autowired
     private TbMeetingDao meetingDao;
+
+    @Autowired
+    private MeetingWorkflowTask meetingWorkflowTask;
     @Override
     public PageUtils searchOfflineMeetingByPage(HashMap param) {
         ArrayList<HashMap> list = meetingDao.searchOfflineMeetingByPage(param);
@@ -29,5 +35,18 @@ public class MeetingServiceImpl implements MeetingService {
         }
         PageUtils pageUtils = new PageUtils(list,count,start,length);
         return pageUtils;
+    }
+
+    @Override
+    public int insert(TbMeeting meeting) {
+        int rows = meetingDao.insert(meeting);
+        if(rows != 1){
+            throw  new EmosException("会议添加失败");
+        }
+        meetingWorkflowTask.startMeetingWorkFlow(meeting.getUuid(),
+                meeting.getCreatorId(), meeting.getTitle(),
+                meeting.getDate(), meeting.getStart() + ":00",
+                "线下会议");
+        return rows;
     }
 }

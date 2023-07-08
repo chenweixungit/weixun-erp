@@ -16,4 +16,6 @@ public interface TbMeetingDao {
     public long searchOfflineMeetingCount(HashMap param);
 
     public int updateMeetingInstanceId(HashMap param);
+
+    public int insert(TbMeeting meeting);
 }

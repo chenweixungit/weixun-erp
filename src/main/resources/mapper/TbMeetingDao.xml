@@ -62,4 +62,25 @@
         WHERE uuid=#{uuid}
     </update>
 
+    <insert id="insert" parameterType="com.example.emos.api.db.pojo.TbMeeting">
+        INSERT INTO tb_meeting
+        SET
+        title = #{title},
+        <if test="uuid!=null">
+            uuid = #{uuid},
+        </if>
+        `date`= #{date},
+        creator_id = #{creatorId},
+        <if test="place!=null">
+            place = #{place},
+        </if>
+        `start` = #{start},
+        `end` = #{end},
+        `type` = #{type},
+        members = #{members},
+        `desc` = #{desc},
+        instance_id = #{instanceId},
+        status = #{status},
+        create_time = NOW()
+    </insert>
 </mapper>
