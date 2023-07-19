@@ -10,4 +10,11 @@ public interface MeetingService {
     public PageUtils searchOfflineMeetingByPage(HashMap param);
 
     public int insert(TbMeeting meeting);
+
+    public ArrayList<HashMap> searchOfflineMeetingInWeek(HashMap param);
+    public HashMap searchMeetingInfo(short status, long id);
+
+    public int deleteMeetingApplication(HashMap param);
+
+    public PageUtils searchOnlineMeetingByPage(HashMap param);
 }
