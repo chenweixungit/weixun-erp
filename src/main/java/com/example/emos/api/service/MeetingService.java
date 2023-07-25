@@ -17,4 +17,11 @@ public interface MeetingService {
     public int deleteMeetingApplication(HashMap param);
 
     public PageUtils searchOnlineMeetingByPage(HashMap param);
+
+    public Long searchRoomIdByUUID(String uuid);
+
+    public ArrayList<HashMap> searchOnlineMeetingMembers(HashMap param);
+
+    public boolean searchCanCheckinMeeting(HashMap param);
+    public int updateMeetingPresent(HashMap param);
 }

@@ -13,6 +13,7 @@ import com.example.emos.api.service.MeetingService;
 import com.example.emos.api.task.MeetingWorkflowTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,6 +26,9 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Autowired
     private MeetingWorkflowTask meetingWorkflowTask;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
     @Override
     public PageUtils searchOfflineMeetingByPage(HashMap param) {
         ArrayList<HashMap> list = meetingDao.searchOfflineMeetingByPage(param);
@@ -116,5 +120,33 @@ public class MeetingServiceImpl implements MeetingService {
         int length = (Integer) param.get("length");
         PageUtils pageUtils = new PageUtils(list, count, start, length);
         return pageUtils;
+    }
+
+    @Override
+    public Long searchRoomIdByUUID(String uuid) {
+        if (redisTemplate.hasKey(uuid)) {
+            Object temp = redisTemplate.opsForValue().get(uuid);
+            long roomId = Long.parseLong(temp.toString());
+            return roomId;
+        }
+        return null;
+    }
+
+    @Override
+    public ArrayList<HashMap> searchOnlineMeetingMembers(HashMap param) {
+        ArrayList<HashMap> list = meetingDao.searchOnlineMeetingMembers(param);
+        return list;
+    }
+
+    @Override
+    public boolean searchCanCheckinMeeting(HashMap param) {
+        long count = meetingDao.searchCanCheckinMeeting(param);
+        return count == 1 ? true : false;
+    }
+
+    @Override
+    public int updateMeetingPresent(HashMap param) {
+        int rows = meetingDao.updateMeetingPresent(param);
+        return rows;
     }
 }

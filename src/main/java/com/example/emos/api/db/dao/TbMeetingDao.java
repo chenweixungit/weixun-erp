@@ -27,4 +27,9 @@ public interface TbMeetingDao {
 
     public ArrayList<HashMap> searchOnlineMeetingByPage(HashMap param);
     public long searchOnlineMeetingCount(HashMap param);
+
+    public ArrayList<HashMap> searchOnlineMeetingMembers(HashMap param);
+
+    public long searchCanCheckinMeeting(HashMap param);
+    public int updateMeetingPresent(HashMap param);
 }

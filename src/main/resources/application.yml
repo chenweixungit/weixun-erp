@@ -101,7 +101,7 @@ workflow:
 
 emos:
   recieveNotify: http://192.168.31.91:8090/emos-api/meeting/recieveNotify
-  tcode: "063331"
+  tcode: "671715"
   code: FC582F8882280552
   icode: FC582F8882280552
 

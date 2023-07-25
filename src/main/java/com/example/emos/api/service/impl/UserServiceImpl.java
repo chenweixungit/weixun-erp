@@ -165,4 +165,16 @@ public class UserServiceImpl implements UserService {
         }
         return openId;
     }
+
+    @Override
+    public ArrayList<String> searchUserRoles(int userId) {
+        ArrayList<String> list = userDao.searchUserRoles(userId);
+        return list;
+    }
+
+    @Override
+    public HashMap searchNameAndDept(int userId) {
+        HashMap map = userDao.searchNameAndDept(userId);
+        return map;
+    }
 }

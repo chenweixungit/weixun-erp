@@ -11,6 +11,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.example.emos.api.common.util.PageUtils;
 import com.example.emos.api.common.util.R;
+import com.example.emos.api.config.tencent.TrtcUtil;
 import com.example.emos.api.controller.form.*;
 import com.example.emos.api.db.pojo.TbMeeting;
 import com.example.emos.api.service.MeetingService;
@@ -18,11 +19,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -37,6 +36,11 @@ import java.util.HashMap;
 public class MeetingController {
     @Autowired
     private MeetingService meetingService;
+    @Value("${tencent.trtc.appId}")
+    private int appId;
+
+    @Autowired
+    private TrtcUtil trtcUtil;
 
     @PostMapping("/searchOfflineMeetingByPage")
     @SaCheckLogin
@@ -160,5 +164,48 @@ public class MeetingController {
         }};
         PageUtils pageUtils = meetingService.searchOnlineMeetingByPage(param);
         return R.ok().put("page", pageUtils);
+    }
+
+    @GetMapping("/searchMyUserSig")
+    @Operation(summary = "获取用户签名")
+    @SaCheckLogin
+    public R searchMyUserSig() {
+        int userId = StpUtil.getLoginIdAsInt();
+        String userSig = trtcUtil.genUserSig(userId + "");
+        return R.ok().put("userSig", userSig).put("userId", userId).put("appId", appId);
+    }
+
+    @PostMapping("/searchRoomIdByUUID")
+    @Operation(summary = "查询会议房间RoomID")
+    @SaCheckLogin
+    public R searchRoomIdByUUID(@Valid @RequestBody SearchRoomIdByUUIDForm form) {
+        Long roomId = meetingService.searchRoomIdByUUID(form.getUuid());
+        return R.ok().put("roomId", roomId);
+    }
+
+    @PostMapping("/searchOnlineMeetingMembers")
+    @Operation(summary = "查询线下会议成员")
+    @SaCheckLogin
+    public R searchOnlineMeetingMembers(@Valid @RequestBody SearchOnlineMeetingMembersForm form) {
+        HashMap param = JSONUtil.parse(form).toBean(HashMap.class);
+        param.put("userId", StpUtil.getLoginIdAsInt());
+        ArrayList<HashMap> list = meetingService.searchOnlineMeetingMembers(param);
+        return R.ok().put("list", list);
+    }
+
+    @PostMapping("/updateMeetingPresent")
+    @Operation(summary = "执行会议签到")
+    @SaCheckLogin
+    public R updateMeetingPresent(@Valid @RequestBody UpdateMeetingPresentForm form) {
+        HashMap param = new HashMap() {{
+            put("meetingId", form.getMeetingId());
+            put("userId", StpUtil.getLoginIdAsInt());
+        }};
+        boolean bool = meetingService.searchCanCheckinMeeting(param);
+        if (bool) {
+            int rows = meetingService.updateMeetingPresent(param);
+            return R.ok().put("rows", rows);
+        }
+        return R.ok().put("rows", 0);
     }
 }
